@@ -4,9 +4,11 @@ import com.gabkings.blogApp.payload.PostDto;
 import com.gabkings.blogApp.payload.PostResponse;
 import com.gabkings.blogApp.services.PostService;
 import com.gabkings.blogApp.utils.AppConstants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +20,9 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<PostDto>  createPost(@RequestBody PostDto postDto
+    public ResponseEntity<PostDto>  createPost(@Valid @RequestBody PostDto postDto
                                                ){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED) ;
     }
@@ -39,11 +42,13 @@ public class PostController {
         return new ResponseEntity(postService.getPostById(id), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity updatePostById(@PathVariable("id") Long id, @RequestBody PostDto post ){
+    public ResponseEntity updatePostById(@PathVariable("id") Long id, @Valid @RequestBody PostDto post ){
         return new ResponseEntity(postService.updatePostById(id, post), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") Long id){
         postService.deletePostById(id);
